@@ -203,10 +203,12 @@ function App() {
           style={{ 
             minWidth: '200px', 
             minHeight: '80px', 
-            zIndex: 9999,
+            zIndex: '9999',
             position: 'fixed',
             touchAction: 'none',
-            WebkitTapHighlightColor: 'transparent'
+            WebkitTapHighlightColor: 'transparent',
+            pointerEvents: 'auto',
+            userSelect: 'none'
           }}
           onTouchStart={(e) => {
             e.preventDefault();
