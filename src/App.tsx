@@ -197,7 +197,8 @@ function App() {
     <div className="w-screen h-screen bg-black overflow-hidden">
       <div ref={sketchRef} className="w-full h-full" />
       {!isListening && (
-        <button
+        <div className="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center">
+          <button
           onClick={startAudio}
           className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white text-black text-2xl px-8 py-4 rounded-xl shadow-lg"
           style={{ 
@@ -225,6 +226,7 @@ function App() {
         >
           マイクをオンにする
         </button>
+        </div>
       )}
     </div>
   )
