@@ -194,9 +194,9 @@ function App() {
   }
 
   return (
-    <div className="relative w-screen h-screen flex flex-col overflow-hidden">
+    <div className="h-[100dvh] flex flex-col overflow-hidden">
       <div ref={sketchRef} className="flex-1 bg-black min-h-0" />
-      <div className="w-full h-[160px] bg-white shadow-lg z-50">
+      <footer className="w-full h-[160px] bg-white shadow-lg z-50">
         <div className="h-full w-full flex flex-col items-center justify-center gap-4 border-t border-gray-200">
           <div className="w-full max-w-lg px-6 flex flex-col items-center gap-4">
             <p className="text-base text-gray-700 text-center">© 2025 VJ Web App. All rights reserved.</p>
