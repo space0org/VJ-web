@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 import type { P5, AudioIn, FFT } from './types/p5'
 
@@ -38,11 +38,23 @@ function App() {
   const particles = useRef<Particle[]>([])
   const baseHue = useRef(0)
 
+  // Auto-initialize audio on mount
+  useEffect(() => {
+    const initAudio = async () => {
+      await loadP5()
+      const p5Instance = new (window as any).p5(() => {}, document.createElement('div')) as P5
+      await p5Instance.userStartAudio()
+      p5Instance.remove()
+    }
+    initAudio()
+  }, [])
+
   useEffect(() => {
     if (!sketchRef.current) return
     
     // Load p5.js and p5.sound before initializing sketch
-    loadP5().then(() => {
+    loadP5().then(async () => {
+      await startAudio()
 
     const sketch = (p: P5) => {
       p.setup = () => {
@@ -184,14 +196,7 @@ function App() {
   return (
     <div className="w-screen h-screen bg-black overflow-hidden">
       <div ref={sketchRef} className="w-full h-full" />
-      {!isListening && (
-        <button
-          onClick={startAudio}
-          className="fixed top-4 left-4 bg-white text-black px-4 py-2 rounded"
-        >
-          マイクをオンにする
-        </button>
-      )}
+
     </div>
   )
 }
