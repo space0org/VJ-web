@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import type { P5, AudioIn, FFT } from './types/p5'
 
@@ -58,11 +58,13 @@ function App() {
 
     const sketch = (p: P5) => {
       p.setup = () => {
-        const canvasHeight = window.innerHeight - 160
-        p.createCanvas(window.innerWidth, canvasHeight)
-        p.colorMode(p.HSB)
-        p.background(0)
-        p.frameRate(60)
+        const canvasContainer = sketchRef.current?.getBoundingClientRect()
+        if (canvasContainer) {
+          p.createCanvas(canvasContainer.width, canvasContainer.height)
+          p.colorMode(p.HSB)
+          p.background(0)
+          p.frameRate(60)
+        }
 
         // Handle both touch and mouse interactions
         const handleInteraction = () => {
@@ -162,8 +164,10 @@ function App() {
       }
 
       p.windowResized = () => {
-        const canvasHeight = window.innerHeight - 160
-        p.resizeCanvas(window.innerWidth, canvasHeight)
+        const canvasContainer = sketchRef.current?.getBoundingClientRect()
+        if (canvasContainer) {
+          p.resizeCanvas(canvasContainer.width, canvasContainer.height)
+        }
       }
     }
 
@@ -196,9 +200,9 @@ function App() {
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-black">
-      <div ref={sketchRef} className="w-full" style={{ height: 'calc(100% - 160px)' }} />
-      <footer className="w-full h-[160px] bg-white shadow-lg">
+    <div>
+      <div ref={sketchRef} className="canvas-container" />
+      <div className="footer shadow-lg">
         <div className="h-full w-full flex flex-col items-center justify-center gap-4 border-t border-gray-200">
           <div className="w-full max-w-lg px-6 flex flex-col items-center gap-4">
             <p className="text-base text-gray-700 text-center">© 2025 VJ Web App. All rights reserved.</p>
@@ -223,7 +227,7 @@ function App() {
             )}
           </div>
         </div>
-      </footer>
+      </div>
     </div>
   )
 }
