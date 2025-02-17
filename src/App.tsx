@@ -194,9 +194,9 @@ function App() {
   }
 
   return (
-    <div className="h-[100dvh] flex flex-col">
-      <div ref={sketchRef} className="flex-1 bg-black overflow-hidden" />
-      <footer className="w-full h-[160px] bg-white shadow-lg z-50 relative">
+    <div className="fixed inset-0 flex flex-col">
+      <div ref={sketchRef} className="absolute inset-0 bottom-[160px] bg-black overflow-hidden" />
+      <footer className="absolute bottom-0 left-0 right-0 h-[160px] bg-white shadow-lg">
         <div className="h-full w-full flex flex-col items-center justify-center gap-4 border-t border-gray-200">
           <div className="w-full max-w-lg px-6 flex flex-col items-center gap-4">
             <p className="text-base text-gray-700 text-center">© 2025 VJ Web App. All rights reserved.</p>
