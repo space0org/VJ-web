@@ -58,7 +58,8 @@ function App() {
 
     const sketch = (p: P5) => {
       p.setup = () => {
-        p.createCanvas(window.innerWidth, window.innerHeight - 160)
+        const canvasHeight = window.innerHeight - 160
+        p.createCanvas(window.innerWidth, canvasHeight)
         p.colorMode(p.HSB)
         p.background(0)
         p.frameRate(60)
@@ -161,7 +162,8 @@ function App() {
       }
 
       p.windowResized = () => {
-        p.resizeCanvas(window.innerWidth, window.innerHeight - 160)
+        const canvasHeight = window.innerHeight - 160
+        p.resizeCanvas(window.innerWidth, canvasHeight)
       }
     }
 
@@ -194,9 +196,9 @@ function App() {
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col">
-      <div ref={sketchRef} className="absolute inset-0 bottom-[160px] bg-black overflow-hidden" />
-      <footer className="absolute bottom-0 left-0 right-0 h-[160px] bg-white shadow-lg">
+    <div className="fixed inset-0 flex flex-col bg-black">
+      <div ref={sketchRef} className="w-full" style={{ height: 'calc(100% - 160px)' }} />
+      <footer className="w-full h-[160px] bg-white shadow-lg">
         <div className="h-full w-full flex flex-col items-center justify-center gap-4 border-t border-gray-200">
           <div className="w-full max-w-lg px-6 flex flex-col items-center gap-4">
             <p className="text-base text-gray-700 text-center">© 2025 VJ Web App. All rights reserved.</p>
