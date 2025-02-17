@@ -196,12 +196,12 @@ function App() {
   return (
     <div className="w-screen h-screen flex flex-col bg-black overflow-hidden">
       <div ref={sketchRef} className="flex-1 w-full" />
-      <div className="w-full bg-white py-4 px-6 flex flex-col items-center gap-4">
-        <p className="text-sm text-gray-600">© 2025 VJ Web App. All rights reserved.</p>
+      <div className="w-full bg-white py-6 px-6 flex flex-col items-center gap-6">
+        <p className="text-base text-gray-700">© 2025 VJ Web App. All rights reserved.</p>
         {!isListening && (
           <button
             onClick={startAudio}
-            className="bg-black text-white text-xl px-8 py-3 rounded-lg shadow-lg active:scale-95 transition-transform"
+            className="w-full max-w-[300px] bg-black text-white text-xl py-4 rounded-xl shadow-lg active:scale-95 transition-transform"
             style={{ 
               touchAction: 'none',
               WebkitTapHighlightColor: 'transparent',
