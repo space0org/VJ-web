@@ -198,27 +198,28 @@ function App() {
       <div ref={sketchRef} className="absolute inset-0" style={{ height: 'calc(100vh - 160px)' }} />
       <div className="fixed bottom-0 left-0 right-0 bg-white" style={{ height: '160px', minHeight: '160px' }}>
         <div className="h-full w-full flex flex-col items-center justify-center gap-4 border-t border-gray-200 shadow-lg">
-        <div className="w-full max-w-lg px-6 flex flex-col items-center gap-4">
-          <p className="text-base text-gray-700 text-center">© 2025 VJ Web App. All rights reserved.</p>
-          {!isListening && (
-            <button
-            onClick={startAudio}
-            className="w-full max-w-[300px] bg-black text-white text-xl py-4 rounded-xl shadow-lg active:scale-95 transition-transform"
-            style={{ 
-              touchAction: 'none',
-              WebkitTapHighlightColor: 'transparent',
-              userSelect: 'none',
-              position: 'relative',
-              zIndex: 100
-            }}
-            onTouchStart={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-          >
-            マイクをオンにする
-            </button>
-          )}
+          <div className="w-full max-w-lg px-6 flex flex-col items-center gap-4">
+            <p className="text-base text-gray-700 text-center">© 2025 VJ Web App. All rights reserved.</p>
+            {!isListening && (
+              <button
+                onClick={startAudio}
+                className="w-full max-w-[300px] bg-black text-white text-xl py-4 rounded-xl shadow-lg active:scale-95 transition-transform"
+                style={{ 
+                  touchAction: 'none',
+                  WebkitTapHighlightColor: 'transparent',
+                  userSelect: 'none',
+                  position: 'relative',
+                  zIndex: 100
+                }}
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                マイクをオンにする
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
