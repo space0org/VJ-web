@@ -200,10 +200,26 @@ function App() {
         <button
           onClick={startAudio}
           className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white text-black text-2xl px-8 py-4 rounded-xl shadow-lg"
-          style={{ minWidth: '200px', minHeight: '80px', zIndex: 9999 }}
-          onTouchStart={(e) => e.stopPropagation()}
-          onTouchMove={(e) => e.stopPropagation()}
-          onTouchEnd={(e) => e.stopPropagation()}
+          style={{ 
+            minWidth: '200px', 
+            minHeight: '80px', 
+            zIndex: 9999,
+            position: 'fixed',
+            touchAction: 'none',
+            WebkitTapHighlightColor: 'transparent'
+          }}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          onTouchMove={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
         >
           マイクをオンにする
         </button>
