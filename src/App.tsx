@@ -217,7 +217,7 @@ function App() {
             </button>
           )}
         </div>
-      </footer>
+      </div>
     </div>
   )
 }
