@@ -195,11 +195,12 @@ function App() {
 
   return (
     <div className="w-screen h-screen flex flex-col bg-black">
-      <div ref={sketchRef} className="w-full h-[calc(100vh-120px)]" />
-      <div className="w-full h-[120px] bg-white py-4 px-6 flex flex-col items-center justify-center gap-3 shadow-lg">
-        <p className="text-base text-gray-700">© 2025 VJ Web App. All rights reserved.</p>
-        {!isListening && (
-          <button
+      <div ref={sketchRef} className="w-full flex-1" />
+      <footer className="w-full bg-white py-6 flex flex-col items-center justify-center gap-4 border-t border-gray-200">
+        <div className="w-full max-w-lg px-6">
+          <p className="text-base text-gray-700 text-center">© 2025 VJ Web App. All rights reserved.</p>
+          {!isListening && (
+            <button
             onClick={startAudio}
             className="w-full max-w-[300px] bg-black text-white text-xl py-4 rounded-xl shadow-lg active:scale-95 transition-transform"
             style={{ 
@@ -213,9 +214,10 @@ function App() {
             }}
           >
             マイクをオンにする
-          </button>
-        )}
-      </div>
+            </button>
+          )}
+        </div>
+      </footer>
     </div>
   )
 }
