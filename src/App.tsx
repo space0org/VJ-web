@@ -58,7 +58,7 @@ function App() {
 
     const sketch = (p: P5) => {
       p.setup = () => {
-        p.createCanvas(window.innerWidth, window.innerHeight)
+        p.createCanvas(window.innerWidth, window.innerHeight - 160)
         p.colorMode(p.HSB)
         p.background(0)
         p.frameRate(60)
@@ -161,7 +161,7 @@ function App() {
       }
 
       p.windowResized = () => {
-        p.resizeCanvas(window.innerWidth, window.innerHeight)
+        p.resizeCanvas(window.innerWidth, window.innerHeight - 160)
       }
     }
 
