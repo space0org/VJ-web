@@ -206,7 +206,9 @@ function App() {
             style={{ 
               touchAction: 'none',
               WebkitTapHighlightColor: 'transparent',
-              userSelect: 'none'
+              userSelect: 'none',
+              position: 'relative',
+              zIndex: 100
             }}
             onTouchStart={(e) => {
               e.preventDefault();
