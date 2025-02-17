@@ -194,9 +194,9 @@ function App() {
   }
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-black relative">
-      <div ref={sketchRef} className="absolute inset-0" />
-      <div className="mt-auto w-full bg-white py-8 px-6 flex flex-col items-center gap-6 relative z-10">
+    <div className="w-screen h-screen flex flex-col bg-black">
+      <div ref={sketchRef} className="w-full h-[calc(100vh-120px)]" />
+      <div className="w-full h-[120px] bg-white py-4 px-6 flex flex-col items-center justify-center gap-3 shadow-lg">
         <p className="text-base text-gray-700">© 2025 VJ Web App. All rights reserved.</p>
         {!isListening && (
           <button
