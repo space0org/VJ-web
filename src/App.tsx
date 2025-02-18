@@ -80,7 +80,7 @@ function App() {
             const touch = p.touches[0] as { x: number; y: number }
             const x = p.touches.length > 0 ? touch.x : p.mouseX
             const y = p.touches.length > 0 ? touch.y : p.mouseY
-            createParticle(x, y, energy)
+            createParticle(x, y, energy, 'mid')
           }
           return false // Prevent default
         }
