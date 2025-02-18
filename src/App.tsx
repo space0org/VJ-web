@@ -326,7 +326,7 @@ function App() {
                   e.stopPropagation();
                 }}
               >
-                マイクをオンにする
+                マイクをオンにする v1.0
               </button>
             )}
           </div>
