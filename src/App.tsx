@@ -59,11 +59,13 @@ function App() {
     if (!sketchRef.current) return
     
     // Load p5.js and p5.sound before initializing sketch
-    loadP5().then(async () => {
-      await startAudio()
-
-    const sketch = (p: P5) => {
-      p.setup = () => {
+    loadP5().then(() => {
+      // Create new p5 instance
+      const sketch = (p: P5) => {
+        // Store p5 instance
+        p5Instance.current = p
+        
+        p.setup = () => {
         const canvasContainer = sketchRef.current?.getBoundingClientRect()
         if (canvasContainer) {
           p.createCanvas(canvasContainer.width, canvasContainer.height)
@@ -118,9 +120,12 @@ function App() {
         p.background(0, 0, 0, 0.1)
         
         if (isListening && fft.current) {
-          // Update audio level display
+          // Get and update audio level with clamped values
           const midEnergy = fft.current.getEnergy('mid')
-          setAudioLevel(midEnergy)
+          const clampedLevel = Math.max(0, Math.min(255, midEnergy))
+          if (Math.abs(clampedLevel - audioLevel) > 1) { // Only update if change is significant
+            setAudioLevel(clampedLevel)
+          }
 
           Object.entries(FREQUENCY_BANDS).forEach(([band, config]) => {
             const energy = fft.current!.getEnergy(config.name)
@@ -199,23 +204,109 @@ function App() {
     if (!p5Instance.current) return
     
     try {
-      // Request microphone access using native browser dialog
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      
       const p = p5Instance.current
-      await p.userStartAudio()
-      mic.current = new (p as any).AudioIn() as AudioIn
       
-      if (mic.current) {
-        await mic.current.start()
-        fft.current = new (p as any).FFT(1024) as FFT
-        if (fft.current && mic.current) {
-          fft.current.setInput(mic.current)
-          setIsListening(true)
+      // Initialize audio context first
+      await p.userStartAudio()
+      const audioContext = p.getAudioContext() as AudioContext
+      await audioContext.resume()
+      console.log('Audio context started')
+
+      // Initialize audio context first
+      try {
+        // Check for audio devices first
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioDevices = devices.filter(device => device.kind === 'audioinput');
+        console.log('Available audio devices:', audioDevices);
+        
+        if (audioDevices.length === 0) {
+          throw new Error('No audio input devices found');
         }
+        
+        // Initialize audio context
+        await p.userStartAudio();
+        const audioContext = p.getAudioContext() as AudioContext;
+        await audioContext.resume();
+        console.log('Audio context started:', audioContext.state);
+        
+        // Request microphone access with simpler constraints
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log('Microphone access granted:', stream.getAudioTracks()[0].label);
+        
+        // Create audio input
+        mic.current = new (p as any).AudioIn();
+        if (!mic.current) throw new Error('Failed to create audio input');
+        
+        // Start audio input
+        await new Promise<void>((resolve, reject) => {
+          if (!mic.current) {
+            reject(new Error('No microphone input'));
+            return;
+          }
+          
+          mic.current.start(() => {
+            console.log('Microphone started successfully');
+            resolve();
+          }, () => {
+            reject(new Error('Failed to start microphone'));
+          });
+        });
+        
+        // Create and connect FFT analyzer
+        fft.current = new (p as any).FFT();
+        if (!fft.current) throw new Error('Failed to create FFT analyzer');
+        
+        fft.current.setInput(mic.current);
+        console.log('FFT analyzer connected to microphone');
+        
+        // Start monitoring audio levels
+        setIsListening(true);
+        setError('');
+        setAudioLevel(0);
+        
+        // Set up continuous audio level monitoring
+        const monitorAudioLevel = () => {
+          if (mic.current && fft.current) {
+            const level = Math.round(fft.current.getEnergy('mid'));
+            setAudioLevel(level);
+          }
+        };
+        
+        // Monitor audio levels every 100ms
+        const intervalId = setInterval(monitorAudioLevel, 100);
+        
+        // Clean up interval on component unmount
+        return () => clearInterval(intervalId);
+        
+      } catch (err) {
+        console.error('Audio initialization error:', err);
+        setError('マイクへのアクセスが拒否されました');
+        setIsListening(false);
+        throw err;
       }
+      
+      // Start monitoring audio levels
+      setIsListening(true);
+      setError('');
+      setAudioLevel(0);
+      
+      // Set up continuous audio level monitoring
+      const monitorAudioLevel = () => {
+        if (mic.current && fft.current) {
+          const level = Math.round(fft.current.getEnergy('mid'));
+          setAudioLevel(level);
+        }
+      };
+      
+      // Monitor audio levels every 100ms
+      const intervalId = setInterval(monitorAudioLevel, 100);
+      
+      // Clean up interval on component unmount
+      return () => clearInterval(intervalId);
     } catch (err) {
+      console.error('Audio initialization error:', err)
       setError('マイクへのアクセスが拒否されました')
+      setIsListening(false)
     }
   }
 
@@ -227,7 +318,7 @@ function App() {
           <div className="w-full max-w-lg px-6 flex flex-col items-center gap-4">
             <p className="text-base text-gray-700 text-center">© 2025 VJ Web App. All rights reserved.</p>
             {isListening && (
-              <p className="text-base text-gray-700 text-center">音量: {Math.round(audioLevel)}</p>
+              <p className="text-base text-gray-700 text-center">音量 : {Math.round(audioLevel)}</p>
             )}
             {!isListening && (
               <button
