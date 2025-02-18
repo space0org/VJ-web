@@ -42,6 +42,7 @@ interface Particle {
 function App() {
   const [isListening, setIsListening] = useState(false)
   const [error, setError] = useState<string>('')
+  const [audioLevel, setAudioLevel] = useState<number>(0)
   
   const sketchRef = useRef<HTMLDivElement>(null)
   const mic = useRef<AudioIn | null>(null)
@@ -117,6 +118,10 @@ function App() {
         p.background(0, 0, 0, 0.1)
         
         if (isListening && fft.current) {
+          // Update audio level display
+          const midEnergy = fft.current.getEnergy('mid')
+          setAudioLevel(midEnergy)
+
           Object.entries(FREQUENCY_BANDS).forEach(([band, config]) => {
             const energy = fft.current!.getEnergy(config.name)
             if (energy > config.threshold) {
@@ -221,6 +226,9 @@ function App() {
         <div className="h-full w-full flex flex-col items-center justify-center gap-4 border-t border-gray-200">
           <div className="w-full max-w-lg px-6 flex flex-col items-center gap-4">
             <p className="text-base text-gray-700 text-center">© 2025 VJ Web App. All rights reserved.</p>
+            {isListening && (
+              <p className="text-base text-gray-700 text-center">音声レベル: {audioLevel.toFixed(1)}</p>
+            )}
             {!isListening && (
               <button
                 onClick={startAudio}
