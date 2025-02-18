@@ -2,7 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import type { P5, AudioIn, FFT } from './types/p5'
 
-// No custom modal needed - using native browser permissions
+// Audio frequency band configuration
+const FREQUENCY_BANDS = {
+  bass: { name: 'bass', threshold: 150, particleCount: 3 },
+  lowMid: { name: 'lowMid', threshold: 130, particleCount: 4 },
+  mid: { name: 'mid', threshold: 100, particleCount: 5 },
+  highMid: { name: 'highMid', threshold: 90, particleCount: 6 },
+  treble: { name: 'treble', threshold: 80, particleCount: 7 }
+} as const;
 
 // Load p5.js and p5.sound dynamically
 const loadP5 = () => {
@@ -29,6 +36,7 @@ interface Particle {
   life: number
   maxLife: number
   sizeVariation: number
+  frequencyBand: keyof typeof FREQUENCY_BANDS
 }
 
 function App() {
@@ -83,24 +91,25 @@ function App() {
         p.mouseDragged = handleInteraction
       }
 
-      const createParticle = (x: number, y: number, energy: number) => {
+      const createParticle = (x: number, y: number, energy: number, band: keyof typeof FREQUENCY_BANDS = 'mid') => {
         const angle = p.random(p.TWO_PI)
-        const speed = p.map(energy, 0, 255, 2, 6)
-        const spread = p.map(energy, 0, 255, 5, 30)
+        const speed = p.map(energy, 0, 255, 2, band === 'treble' ? 8 : 6)
+        const spread = p.map(energy, 0, 255, 5, band === 'bass' ? 40 : 30)
         const distanceFromCenter = p.random(spread)
         const particleAngle = p.random(p.TWO_PI)
-        const maxLife = p.random(50, 150)
+        const maxLife = p.random(50, band === 'bass' ? 200 : 150)
         
         particles.current.push({
           x: x + Math.cos(particleAngle) * distanceFromCenter,
           y: y + Math.sin(particleAngle) * distanceFromCenter,
-          size: p.map(energy, 0, 255, 2, 6),
+          size: p.map(energy, 0, 255, 2, band === 'bass' ? 8 : 6),
           hue: (baseHue.current + p.random(-15, 15)) % 360,
           speed,
           angle,
           life: maxLife,
           maxLife,
-          sizeVariation: p.random(0.5, 2)
+          sizeVariation: p.random(0.5, band === 'bass' ? 3 : 2),
+          frequencyBand: band
         })
       }
 
@@ -108,18 +117,19 @@ function App() {
         p.background(0, 0, 0, 0.1)
         
         if (isListening && fft.current) {
-          const energy = fft.current.getEnergy('mid')
-          
-          // Create particles based on audio energy
-          if (energy > 100) {
-            for (let i = 0; i < 5; i++) {
-              createParticle(
-                p.random(p.width),
-                p.random(p.height),
-                energy
-              )
+          Object.entries(FREQUENCY_BANDS).forEach(([band, config]) => {
+            const energy = fft.current!.getEnergy(config.name)
+            if (energy > config.threshold) {
+              for (let i = 0; i < config.particleCount; i++) {
+                createParticle(
+                  p.random(p.width),
+                  p.random(p.height),
+                  energy,
+                  band as keyof typeof FREQUENCY_BANDS
+                )
+              }
             }
-          }
+          })
         }
 
         // Update and draw particles
@@ -138,19 +148,25 @@ function App() {
             return false
           }
 
-          // Calculate size and opacity based on life
+          // Calculate size and opacity based on life and frequency
           const lifeRatio = particle.life / particle.maxLife
           const currentSize = particle.size * 
             (1 + Math.sin(lifeRatio * Math.PI) * particle.sizeVariation)
-          const alpha = lifeRatio * 0.8
+          const alpha = lifeRatio * (particle.frequencyBand === 'bass' ? 0.9 : 0.8)
 
           // Draw particle with glow effect
           p.noStroke()
           // Outer glow
-          p.fill(particle.hue, 80, 100, alpha * 0.2)
+          p.fill(particle.hue, 
+            particle.frequencyBand === 'treble' ? 90 : 80, 
+            100, 
+            alpha * 0.2)
           p.circle(particle.x, particle.y, currentSize * 2)
           // Inner particle
-          p.fill(particle.hue, 100, 100, alpha)
+          p.fill(particle.hue, 
+            particle.frequencyBand === 'treble' ? 100 : 90, 
+            100, 
+            alpha)
           p.circle(particle.x, particle.y, currentSize)
           
           return true
