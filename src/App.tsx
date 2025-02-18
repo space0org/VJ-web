@@ -2,81 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import type { P5, AudioIn, FFT } from './types/p5'
 
-interface MicrophoneModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onDeviceSelect: (deviceId: string) => void;
-  devices: MediaDeviceInfo[];
-  selectedDevice: string;
-  onDeviceChange: (deviceId: string) => void;
-  error?: string;
-}
-
-const MicrophoneModal = ({
-  isOpen,
-  onClose,
-  onDeviceSelect,
-  devices,
-  selectedDevice,
-  onDeviceChange,
-  error
-}: MicrophoneModalProps) => {
-  if (!isOpen) return null;
-  
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000]">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
-        <div className="flex items-center mb-4">
-          <div className="w-8 h-8 mr-3">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14Z" fill="#4285F4"/>
-              <path d="M17.91 11C17.91 11.41 17.87 11.8 17.82 12.18C17.72 12.9 18.26 13.5 18.98 13.5H19.04C19.52 13.5 19.93 13.15 20.03 12.68C20.11 12.27 20.15 11.84 20.15 11.4C20.15 7.74 17.89 4.61 14.69 3.36C14.25 3.19 13.8 3.5 13.8 3.97V4.04C13.8 4.41 14.03 4.73 14.35 4.89C16.89 5.96 18.71 8.31 18.71 11H17.91Z" fill="#4285F4"/>
-              <path d="M6.09 11C6.09 8.31 7.91 5.96 10.45 4.89C10.77 4.73 11 4.41 11 4.04V3.97C11 3.5 10.55 3.19 10.11 3.36C6.91 4.61 4.65 7.74 4.65 11.4C4.65 11.84 4.69 12.27 4.77 12.68C4.87 13.15 5.28 13.5 5.76 13.5H5.82C6.54 13.5 7.08 12.9 6.98 12.18C6.93 11.8 6.09 11.41 6.09 11Z" fill="#4285F4"/>
-              <path d="M12 16.5C9.11 16.5 6.75 14.15 6.75 11.25C6.75 10.84 6.41 10.5 6 10.5H5.94C5.52 10.5 5.19 10.84 5.19 11.25C5.19 14.97 8.28 18 12 18C15.72 18 18.81 14.97 18.81 11.25C18.81 10.84 18.48 10.5 18.06 10.5H18C17.59 10.5 17.25 10.84 17.25 11.25C17.25 14.15 14.89 16.5 12 16.5Z" fill="#4285F4"/>
-              <path d="M12 20C11.45 20 11 20.45 11 21V22C11 22.55 11.45 23 12 23C12.55 23 13 22.55 13 22V21C13 20.45 12.55 20 12 20Z" fill="#4285F4"/>
-            </svg>
-          </div>
-          <h2 className="text-lg font-semibold">マイクへのアクセス</h2>
-        </div>
-        {error ? (
-          <p className="text-red-500 mb-4">{error}</p>
-        ) : (
-          <>
-            <p className="text-gray-600 mb-4">このサイトがマイクを使用できるようにしますか？</p>
-            {devices.length > 0 && (
-              <select 
-                value={selectedDevice} 
-                onChange={(e) => onDeviceChange(e.target.value)}
-                className="w-full p-2 mb-4 border rounded"
-              >
-                {devices.map(device => (
-                  <option key={device.deviceId} value={device.deviceId}>
-                    {device.label || `マイク ${device.deviceId.slice(0, 4)}`}
-                  </option>
-                ))}
-              </select>
-            )}
-          </>
-        )}
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
-          >
-            ブロック
-          </button>
-          <button
-            onClick={() => onDeviceSelect(selectedDevice)}
-            className="px-4 py-2 bg-[#4285F4] text-white rounded hover:bg-[#3367D6]"
-            disabled={!!error || devices.length === 0}
-          >
-            許可
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+// No custom modal needed - using native browser permissions
 
 // Load p5.js and p5.sound dynamically
 const loadP5 = () => {
@@ -107,9 +33,6 @@ interface Particle {
 
 function App() {
   const [isListening, setIsListening] = useState(false)
-  const [showModal, setShowModal] = useState(false)
-  const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([])
-  const [selectedDevice, setSelectedDevice] = useState<string>('')
   const [error, setError] = useState<string>('')
   
   const sketchRef = useRef<HTMLDivElement>(null)
@@ -119,28 +42,7 @@ function App() {
   const particles = useRef<Particle[]>([])
   const baseHue = useRef(0)
 
-  // Get available audio devices
-  useEffect(() => {
-    const handleDeviceChange = async () => {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices()
-        const audioInputs = devices.filter(device => device.kind === 'audioinput')
-        setAudioDevices(audioInputs)
-        if (audioInputs.length > 0 && !selectedDevice) {
-          setSelectedDevice(audioInputs[0].deviceId)
-        }
-      } catch (err) {
-        setError('デバイスの列挙中にエラーが発生しました')
-      }
-    }
-
-    navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange)
-    handleDeviceChange()
-
-    return () => {
-      navigator.mediaDevices.removeEventListener('devicechange', handleDeviceChange)
-    }
-  }, [])
+  // No need to enumerate devices - browser will handle device selection
 
 
 
@@ -273,17 +175,11 @@ function App() {
   }, [isListening])
 
   const startAudio = async () => {
-    setError('')
-    setShowModal(true)
-  }
-
-  const handleDeviceSelect = async () => {
-    if (!p5Instance.current || !selectedDevice) return
+    if (!p5Instance.current) return
     
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: { deviceId: { exact: selectedDevice } }
-      })
+      // Request microphone access using native browser dialog
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       
       const p = p5Instance.current
       await p.userStartAudio()
@@ -295,7 +191,6 @@ function App() {
         if (fft.current && mic.current) {
           fft.current.setInput(mic.current)
           setIsListening(true)
-          setShowModal(false)
         }
       }
     } catch (err) {
@@ -332,18 +227,11 @@ function App() {
           </div>
         </div>
       </div>
-      <MicrophoneModal
-        isOpen={showModal}
-        onClose={() => {
-          setShowModal(false)
-          setError('')
-        }}
-        onDeviceSelect={handleDeviceSelect}
-        devices={audioDevices}
-        selectedDevice={selectedDevice}
-        onDeviceChange={setSelectedDevice}
-        error={error}
-      />
+      {error && (
+        <div className="fixed bottom-40 left-0 right-0 flex justify-center">
+          <p className="bg-red-500 text-white px-4 py-2 rounded">{error}</p>
+        </div>
+      )}
     </div>
   )
 }
