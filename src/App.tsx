@@ -316,12 +316,14 @@ function App() {
       <div className="footer shadow-lg">
         <div className="h-full w-full flex flex-col items-center justify-center gap-4 border-t border-gray-200">
           <div className="w-full max-w-lg px-6 flex flex-col items-center gap-4">
-            <p className="text-base text-gray-700 text-center">© 2025 VJ Web App. All rights reserved.</p>
-            <p className="text-base text-gray-700 text-center mb-4">音量 : {Math.round(audioLevel)}</p>
+            <p className="text-base text-gray-700 text-center mb-2">© 2025 VJ Web App. All rights reserved.</p>
+            <p className="text-base text-gray-700 text-center mb-4" style={{ minHeight: '24px' }}>
+              音量 : {Math.round(audioLevel)}
+            </p>
             {!isListening && (
               <button
                 onClick={startAudio}
-                className="w-full max-w-[300px] bg-black text-white text-xl py-4 rounded-xl shadow-lg active:scale-95 transition-transform"
+                className="w-full max-w-[300px] bg-black text-white text-xl py-4 rounded-xl shadow-lg active:scale-95 transition-transform mt-2"
                 style={{ 
                   touchAction: 'none',
                   WebkitTapHighlightColor: 'transparent',

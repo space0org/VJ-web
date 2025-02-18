@@ -23,14 +23,15 @@ html, body, #root {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 160px;
+  height: 180px;
   background: white;
   z-index: 10;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   padding: 20px;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .footer button {
