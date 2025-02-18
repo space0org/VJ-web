@@ -317,9 +317,7 @@ function App() {
         <div className="h-full w-full flex flex-col items-center justify-center gap-4 border-t border-gray-200">
           <div className="w-full max-w-lg px-6 flex flex-col items-center gap-4">
             <p className="text-base text-gray-700 text-center">© 2025 VJ Web App. All rights reserved.</p>
-            {isListening && (
-              <p className="text-base text-gray-700 text-center">音量 : {Math.round(audioLevel)}</p>
-            )}
+            <p className="text-base text-gray-700 text-center mb-4">音量 : {Math.round(audioLevel)}</p>
             {!isListening && (
               <button
                 onClick={startAudio}
